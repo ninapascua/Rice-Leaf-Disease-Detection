@@ -1,0 +1,32 @@
+# Core Python Libraries
+numpy
+pandas
+scikit-learn
+
+# Deep Learning Frameworks
+tensorflow
+keras
+
+# CNN Tools / Visualization
+opencv-python
+matplotlib
+seaborn
+pillow
+grad-cam
+
+# NLP Tools
+transformers
+sentencepiece
+
+# Reinforcement Learning
+gymnasium
+stable-baselines3
+
+# Utilities
+tqdm
+requests
+ipykernel
+notebook
+
+#dataset
+kaggle
