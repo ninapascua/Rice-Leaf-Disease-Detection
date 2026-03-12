@@ -1,24 +1,22 @@
-# Rice Leaf Disease Detection
-
-## Overview
+# Overview
 CNN-based system for classifying rice leaf diseases using EfficientNet.
 
-## Features
+# Features
 - CNN image classification
 - Grad-CAM visualization
 - NLP explanation
 - RL optimization
 
-## Project Structure
+# Project Structure
 data/
 docs/
 scripts/
 src/
 
-## Setup
+# Setup
 pip install -r requirements.txt
 
-## Dataset
+# Dataset
 Run:
 python data/get_data.py
 
