@@ -3,31 +3,20 @@ from pathlib import Path
 from PIL import Image, UnidentifiedImageError
 import pandas as pd
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-RAW_BASE = PROJECT_ROOT / "data" / "raw" / "RiceLeafs"
-PROCESSED_BASE = PROJECT_ROOT / "data" / "processed"
+RAW_BASE = Path("data/raw/RiceLeafs")
+PROCESSED_BASE = Path("data/processed")
 
 SPLITS = ["train", "validation"]
 IMG_SIZE = (224, 224)
 VALID_EXTS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
-
-MAX_IMAGES_PER_CLASS = None
-
 
 def preprocess_image(src_path: Path, dst_path: Path, size=(224, 224)):
     dst_path.parent.mkdir(parents=True, exist_ok=True)
 
     with Image.open(src_path) as img:
         img = img.convert("RGB")
-        img.thumbnail(size)
-
-        background = Image.new("RGB", size, (0, 0, 0))
-        x = (size[0] - img.width) // 2
-        y = (size[1] - img.height) // 2
-        background.paste(img, (x, y))
-
-        background.save(dst_path, format="JPEG", quality=85, optimize=True)
-
+        img = img.resize(size, Image.Resampling.LANCZOS)
+        img.save(dst_path, format="JPEG", quality=95)
 
 def process_split(split: str):
     split_input_dir = RAW_BASE / split
@@ -46,24 +35,17 @@ def process_split(split: str):
             continue
 
         label = class_dir.name
-        print(f"\n[{split}] Processing class: {label}")
+        print(f"\nProcessing class: {label}")
 
-        image_files = [
-            img_path for img_path in sorted(class_dir.iterdir())
-            if img_path.is_file() and img_path.suffix.lower() in VALID_EXTS
-        ]
+        for img_path in sorted(class_dir.iterdir()):
+            if img_path.suffix.lower() not in VALID_EXTS:
+                continue
 
-        if MAX_IMAGES_PER_CLASS is not None:
-            image_files = image_files[:MAX_IMAGES_PER_CLASS]
-
-        for img_path in image_files:
             out_name = img_path.stem + ".jpg"
             out_path = split_output_dir / label / out_name
 
             try:
-                print(f"Processing: {img_path}")
                 preprocess_image(img_path, out_path, size=IMG_SIZE)
-
                 rows.append({
                     "filepath": str(out_path).replace("\\", "/"),
                     "label": label,
@@ -71,9 +53,11 @@ def process_split(split: str):
                 })
                 processed_count += 1
 
+                if processed_count % 50 == 0:
+                    print(f"[{split}] processed {processed_count} images...")
+
             except (UnidentifiedImageError, OSError, ValueError) as e:
                 unreadable.append((str(img_path), str(e)))
-                print(f"[SKIPPED] {img_path} -> {e}")
 
     df = pd.DataFrame(rows)
     csv_path = PROCESSED_BASE / f"{split}.csv"
@@ -91,12 +75,12 @@ def process_split(split: str):
 
     return df
 
-
 def main():
     PROCESSED_BASE.mkdir(parents=True, exist_ok=True)
 
     all_dfs = []
     for split in SPLITS:
+        print(f"\nStarting split: {split}")
         df = process_split(split)
         if df is not None:
             all_dfs.append(df)
@@ -105,13 +89,10 @@ def main():
         combined_df = pd.concat(all_dfs, ignore_index=True)
         combined_csv = PROCESSED_BASE / "all_data.csv"
         combined_df.to_csv(combined_csv, index=False)
-
         print(f"\n[done] combined csv saved to: {combined_csv}")
-        print("\nLabel counts:")
         print(combined_df["label"].value_counts())
     else:
         print("[ERROR] No data processed.")
-
 
 if __name__ == "__main__":
     main()
