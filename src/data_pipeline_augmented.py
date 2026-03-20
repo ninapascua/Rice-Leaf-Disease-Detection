@@ -6,7 +6,7 @@ import pandas as pd
 import tensorflow as tf
 from sklearn.preprocessing import LabelEncoder
 from sklearn.utils.class_weight import compute_class_weight
-from tensorflow.keras.applications.efficientnet import preprocess_input
+from keras.applications.efficientnet import preprocess_input
 
 
 IMG_SIZE = (224, 224)

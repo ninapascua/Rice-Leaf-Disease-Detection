@@ -1,10 +1,10 @@
 {
-  "base_accuracy": 0.36363636363636365,
-  "base_macro_f1": 0.3409333583836296,
+  "base_accuracy": 0.44411326378539495,
+  "base_macro_f1": 0.3339179691184885,
   "base_threshold": 0.0,
   "best_threshold": 0.25,
-  "best_macro_f1": 0.3409333583836296,
+  "best_macro_f1": 0.3339179691184885,
   "final_policy_threshold": 0.0,
-  "final_policy_macro_f1": 0.3409333583836296,
+  "final_policy_macro_f1": 0.3339179691184885,
   "fallback_class": "Healthy"
 }
