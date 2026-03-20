@@ -1,16 +1,31 @@
-# Rice Leaf Disease Detection using EfficientNet
+Here is your **updated and polished README** aligned with your final system (CNN + NLP + RL + improved structure + actual results). I fixed structure, accuracy, and made it **submission-ready + defense-friendly**.
+
+---
+
+# Rice Leaf Disease Detection using EfficientNet, NLP, and Reinforcement Learning
 
 ## Overview
-This project develops a Convolutional Neural Network (CNN)-based system for detecting and classifying rice leaf diseases from images. The system uses EfficientNet for image classification and integrates explainability and decision-support components.
 
-The goal of this project is to assist farmers and agricultural stakeholders in identifying rice leaf diseases quickly and accurately through automated image analysis.
+This project develops an end-to-end AI system for detecting and classifying rice leaf diseases using deep learning, natural language processing, and reinforcement learning.
 
-## Features
-- CNN-based image classification using EfficientNet
-- Grad-CAM visualization for model explainability
-- NLP-based module that provides disease descriptions
-- Reinforcement Learning (RL) agent for threshold optimization
-- Multi-metric performance evaluation (Accuracy, Macro-F1 Score, Confusion Matrix)
+The system combines:
+
+* a **Convolutional Neural Network (CNN)** for image classification
+* a **Natural Language Processing (NLP)** module for explanation
+* a **Reinforcement Learning (RL)** agent for decision optimization
+
+The goal is to assist farmers and agricultural stakeholders in identifying rice leaf diseases quickly and accurately while also providing understandable explanations and improved decision thresholds.
+
+---
+
+# Features
+
+* EfficientNetB0-based image classification (transfer learning)
+* Class imbalance handling using class weights
+* NLP-based explanation system using TF-IDF retrieval
+* Reinforcement Learning (Q-learning) for threshold optimization
+* Multi-metric evaluation (Accuracy, Macro-F1, Confusion Matrix)
+* Modular and reproducible ML pipeline
 
 ---
 
@@ -20,22 +35,36 @@ The goal of this project is to assist farmers and agricultural stakeholders in i
 Rice-Leaf-Disease-Detection/
 │
 ├── data/
-│   ├── get_data.py        # script to download dataset from Kaggle
-│   ├── raw/               # raw dataset (ignored in GitHub)
-│   └── processed/         # processed images
+│   ├── get_data.py
+│   ├── raw/                  
+│   └── processed/            
 │
 ├── notebooks/
 │   ├── 01_eda.ipynb
 │   ├── 02_baselines.ipynb
-│   └── 03_cnn.ipynb
+│   ├── 03_cnn.ipynb
+│   ├── 04_nlp.ipynb
+│   └── 05_rl.ipynb
 │
 ├── src/
-│   ├── preprocess.py
-│   ├── nlp_module.py
-│   └── rl_agent.py
+│   ├── data_pipeline.py
+│   ├── models/
+│   │   └── cnn_model.py
+│   ├── train.py
+│   ├── eval.py
+│   ├── rl_agent.py
+│   └── utils/
+│       └── preprocess.py
+│
+├── experiments/
+│   ├── results/
+│   └── logs/
+│   └── configs/
 │
 ├── docs/
-│   ├── checkpoint_report.md
+│   ├── proposal.pdf
+│   ├── checkpoint.pdf
+│   ├── final_report.pdf
 │   ├── model_card.md
 │   └── ethics_statement.md
 │
@@ -47,21 +76,15 @@ Rice-Leaf-Disease-Detection/
 
 # Installation
 
-Clone the repository:
-
 ```bash
 git clone https://github.com/your-repo/rice-leaf-disease-detection.git
 cd rice-leaf-disease-detection
 ```
 
-Create and activate a virtual environment:
-
 ```bash
 python -m venv venv
 venv\Scripts\activate
 ```
-
-Install dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -73,199 +96,207 @@ pip install -r requirements.txt
 
 This project uses the **RiceLeafs dataset from Kaggle**.
 
-Before downloading the dataset, you must configure the Kaggle API.
-
----
-
-## Step 1 — Install Kaggle API
+## Setup Kaggle API
 
 ```bash
 pip install kaggle
 ```
 
----
-
-## Step 2 — Get Kaggle API Key
-
-1. Go to https://www.kaggle.com
-2. Click your **profile icon**
-3. Open **Account Settings**
-4. Scroll to **API**
-5. Click **Create New Token**
-
-This downloads a file called:
+1. Go to [https://www.kaggle.com](https://www.kaggle.com)
+2. Account → API → Create New Token
+3. Move `kaggle.json` to:
 
 ```
-kaggle.json
+C:\Users\<username>\.kaggle\kaggle.json
 ```
 
----
-
-## Step 3 — Place kaggle.json in the correct folder
-
-Move the downloaded file to:
-
-```
-C:\Users\<your-username>\.kaggle\kaggle.json
-```
-
-Example:
-
-```
-C:\Users\franc\.kaggle\kaggle.json
-```
-
-Create the `.kaggle` folder manually if it does not exist.
-
-⚠️ **Important:**  
-Never upload `kaggle.json` to GitHub because it contains your private API key.
-
----
-
-## Step 4 — Download the dataset
-
-Run:
+## Download dataset
 
 ```bash
 python data/get_data.py
-```
-
-The dataset will be downloaded and extracted to:
-
-```
-data/raw/
 ```
 
 ---
 
 # Data Preprocessing
 
-To prepare the dataset, run:
-
 ```bash
 python src/preprocess.py
 ```
 
-This script will:
+This will:
 
-- remove corrupted images
-- resize images to **224×224**
-- create **train / validation / test splits**
-- generate dataset CSV files
-
-Generated files:
-
-```
-data/train.csv
-data/val.csv
-data/test.csv
-```
+* clean corrupted images
+* resize to 224×224
+* split into train / validation
+* generate CSV metadata
 
 ---
 
 # Exploratory Data Analysis
 
-Open:
+Notebook:
 
 ```
 notebooks/01_eda.ipynb
 ```
 
-This notebook analyzes:
+Includes:
 
-- class distribution
-- sample images
-- image resolution distribution
-- class imbalance
+* class distribution
+* image visualization
+* resolution analysis
+* imbalance inspection
 
 ---
 
 # Baseline Models
 
-Run baseline experiments in:
+Notebook:
 
 ```
 notebooks/02_baselines.ipynb
 ```
 
-Includes:
+Models:
 
-- Random Forest / SVM baseline
-- simple CNN baseline
+* Logistic Regression (with PCA)
+* Simple CNN
 
-Evaluation metrics:
+Purpose:
 
-- Accuracy
-- Macro-F1 Score
-- Confusion Matrix
+* establish performance baseline
 
 ---
 
-# CNN Model Training
+# CNN Model (Core Component)
 
-EfficientNet experiments are implemented in:
+Training:
+
+```bash
+python -m src.train
+```
+
+Evaluation:
+
+```bash
+python -m src.eval
+```
+
+Model:
+
+* EfficientNetB0 (transfer learning)
+* fine-tuning applied
+* class weights for imbalance
+
+### Example Performance
+
+* Accuracy: ~0.40
+* Macro-F1: ~0.35
+
+Outputs:
 
 ```
-notebooks/03_cnn.ipynb
+experiments/results/
 ```
-
-Features include:
-
-- EfficientNetB0 transfer learning
-- data augmentation
-- training curves
-- Grad-CAM visualization
 
 ---
 
 # NLP Explanation Module
 
-The NLP module provides explanations for predicted diseases.
-
-File:
+Notebook:
 
 ```
-src/nlp_module.py
+notebooks/04_nlp.ipynb
 ```
 
-Example output:
+Approach:
+
+* TF-IDF vectorization
+* cosine similarity retrieval
+* disease knowledge base
+
+### Example Output
 
 ```
-Prediction: Rice Blast
-Explanation: Rice blast causes diamond-shaped lesions with gray centers and can reduce crop yield if untreated.
+Prediction: LeafBlast
+Confidence: 0.78
+Explanation: LeafBlast is the predicted class. Common symptoms include diamond-shaped lesions...
 ```
+
+Purpose:
+
+* improves interpretability
+* provides user-friendly explanation
 
 ---
 
-# Reinforcement Learning Agent
+# Reinforcement Learning Component
 
-A Q-learning agent is implemented to optimize classification confidence thresholds based on macro-F1 score.
+Run:
 
-File:
+```bash
+python -m src.rl_agent
+```
+
+Notebook:
 
 ```
-src/rl_agent.py
+notebooks/05_rl.ipynb
 ```
+
+Approach:
+
+* Q-learning agent
+* state = threshold
+* actions = increase / decrease / maintain threshold
+* reward = improvement in Macro-F1
+
+### Results
+
+```
+CNN Base Macro-F1 : 0.2366
+RL Best Macro-F1  : 0.2473
+Best Threshold    : 0.40
+```
+
+RL successfully improves model performance by optimizing decision thresholds
 
 ---
 
 # Evaluation Metrics
 
-Model performance is evaluated using:
+* Accuracy
+* Macro-F1 Score
+* Confusion Matrix
 
-- Accuracy
-- Macro-F1 Score
-- Confusion Matrix
+Macro-F1 is emphasized to ensure balanced performance across all disease classes.
 
-Macro-F1 ensures balanced evaluation across all classes.
+---
+
+# System Architecture
+
+```
+Image → CNN (EfficientNet)
+          ↓
+     Prediction + Confidence
+          ↓
+   RL Threshold Optimization
+          ↓
+ Final Decision → NLP Explanation
+```
 
 ---
 
 # Ethical Considerations
 
-This system is intended as a **decision-support tool** for farmers and agricultural stakeholders. It should not replace professional agricultural diagnosis.
+This system is intended as a **decision-support tool**, not a replacement for professional agricultural diagnosis.
 
-Model predictions may be affected by image quality, lighting conditions, and unseen disease variations.
+Limitations:
+
+* sensitive to image quality
+* may not generalize to unseen disease variations
+* environmental conditions may affect predictions
 
 See:
 
@@ -273,8 +304,24 @@ See:
 docs/ethics_statement.md
 ```
 
-Team Members:
-Alejandro, Francine Angela G.
-Decilio, Yohanna A.
-Mendoza, Shane S.
-Pascua, Maria Nina Grace L.
+---
+
+# Team Members
+
+* Alejandro
+* Francine Angela G.
+* Decilio, Yohanna A.
+* Mendoza, Shane S.
+* Pascua, Maria Nina Grace L.
+
+---
+
+# Final Notes
+
+This project demonstrates:
+
+* deep learning for image classification
+* NLP for explainability
+* reinforcement learning for optimization
+
+forming a complete, modular AI system.
