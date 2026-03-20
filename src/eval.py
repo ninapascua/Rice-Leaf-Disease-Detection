@@ -13,10 +13,10 @@ from sklearn.metrics import (
     f1_score,
 )
 
-from src.data_pipeline import prepare_data
+from src.data_pipeline_augmented import prepare_data
 
 
-MODEL_PATH = Path("experiments/results/best_efficientnetb0.keras")
+MODEL_PATH = Path("experiments/results/best_efficientnetb0_augmented.keras")
 METRICS_PATH = Path("experiments/results/eval_metrics.json")
 RESULTS_CSV_PATH = Path("experiments/results/eval_results.csv")
 CONF_MATRIX_PATH = Path("experiments/results/confusion_matrix.png")

@@ -3,11 +3,12 @@ import json
 
 import tensorflow as tf
 
-from src.data_pipeline import prepare_data
-from src.models.cnn_model import build_efficientnet
+# here i only added _augmented | remove it if u want to train the baseline
+from src.data_pipeline_augmented import prepare_data
+from src.models.cnn_model_augmented import build_efficientnet
 
-
-MODEL_OUTPUT_PATH = Path("experiments/results/best_efficientnetb0.keras")
+# i did change here MODEL_OUTPUT_PATH = Path("experiments/results/best_efficientnetb0.keras")
+MODEL_OUTPUT_PATH = Path("experiments/results/best_efficientnetb0_augmented.keras")
 HISTORY_OUTPUT_PATH = Path("experiments/logs/training_history.json")
 
 
@@ -15,7 +16,7 @@ def get_callbacks(model_path: str):
     return [
         tf.keras.callbacks.EarlyStopping(
             monitor="val_loss",
-            patience=3,
+            patience=5,
             restore_best_weights=True,
             verbose=1,
         ),
@@ -70,7 +71,7 @@ def main():
     history = model.fit(
         train_ds,
         validation_data=val_ds,
-        epochs=20,
+        epochs=30,
         class_weight=class_weights,
         callbacks=callbacks,
         verbose=1,
@@ -78,7 +79,7 @@ def main():
 
     print("Starting fine-tuning phase...")
     base_model.trainable = True
-    for layer in base_model.layers[:-150]:
+    for layer in base_model.layers[:-20]:
         layer.trainable = False
 
 
