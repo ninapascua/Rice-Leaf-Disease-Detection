@@ -1,6 +1,3 @@
-Here is your **updated and polished README** aligned with your final system (CNN + NLP + RL + improved structure + actual results). I fixed structure, accuracy, and made it **submission-ready + defense-friendly**.
-
----
 
 # Rice Leaf Disease Detection using EfficientNet, NLP, and Reinforcement Learning
 
@@ -48,8 +45,10 @@ Rice-Leaf-Disease-Detection/
 │
 ├── src/
 │   ├── data_pipeline.py
+│   ├── data_pipeline_augmented.py
 │   ├── models/
 │   │   └── cnn_model.py
+│   │   └── cnn_model_augmented.py
 │   ├── train.py
 │   ├── eval.py
 │   ├── rl_agent.py
@@ -121,7 +120,7 @@ python data/get_data.py
 # Data Preprocessing
 
 ```bash
-python src/preprocess.py
+python src/utils/preprocess.py
 ```
 
 This will:
@@ -132,6 +131,22 @@ This will:
 * generate CSV metadata
 
 ---
+
+# Data Augmentation
+
+```bash
+python src/data_pipeline_augmentation.py
+```
+
+This will:
+
+* spatial / geometric augmentation
+* color / photometric augmentation
+* fine-grained noise
+* clipping
+
+---
+
 
 # Exploratory Data Analysis
 
@@ -308,8 +323,7 @@ docs/ethics_statement.md
 
 # Team Members
 
-* Alejandro
-* Francine Angela G.
+* Alejandro, Francine Angela G.
 * Decilio, Yohanna A.
 * Mendoza, Shane S.
 * Pascua, Maria Nina Grace L.
