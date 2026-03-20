@@ -1,0 +1,87 @@
+from pathlib import Path
+import json
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    ConfusionMatrixDisplay,
+    f1_score,
+)
+
+from src.data_pipeline import prepare_data
+
+
+MODEL_PATH = Path("experiments/results/best_efficientnetb0.keras")
+METRICS_PATH = Path("experiments/results/eval_metrics.json")
+RESULTS_CSV_PATH = Path("experiments/results/eval_results.csv")
+CONF_MATRIX_PATH = Path("experiments/results/confusion_matrix.png")
+CLASS_REPORT_PATH = Path("experiments/results/classification_report.txt")
+
+
+def main():
+    data = prepare_data()
+    val_ds = data["val_ds"]
+    class_names = data["class_names"]
+    y_val = data["y_val"]
+
+    model = tf.keras.models.load_model(MODEL_PATH)
+
+    val_probs = model.predict(val_ds, verbose=1)
+    val_pred = np.argmax(val_probs, axis=1)
+
+    y_val_true = np.concatenate([y for _, y in val_ds], axis=0)
+
+    acc = accuracy_score(y_val_true, val_pred)
+    macro_f1 = f1_score(y_val_true, val_pred, average="macro")
+    cls_report = classification_report(y_val_true, val_pred, target_names=class_names)
+
+    cm = confusion_matrix(y_val_true, val_pred)
+
+    print("Accuracy:", round(acc, 4))
+    print("Macro-F1:", round(macro_f1, 4))
+    print("\nClassification Report:\n")
+    print(cls_report)
+
+    METRICS_PATH.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(METRICS_PATH, "w") as f:
+        json.dump(
+            {
+                "accuracy": float(acc),
+                "macro_f1": float(macro_f1),
+            },
+            f,
+            indent=2,
+        )
+
+    with open(CLASS_REPORT_PATH, "w") as f:
+        f.write(cls_report)
+
+    results_df = pd.DataFrame({
+        "Model": ["EfficientNetB0"],
+        "Accuracy": [acc],
+        "Macro-F1": [macro_f1],
+    })
+    results_df.to_csv(RESULTS_CSV_PATH, index=False)
+
+    fig, ax = plt.subplots(figsize=(7, 7))
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)
+    disp.plot(ax=ax, xticks_rotation=45, cmap="Blues", colorbar=False)
+    plt.title("EfficientNetB0 Confusion Matrix")
+    plt.tight_layout()
+    plt.savefig(CONF_MATRIX_PATH, dpi=300, bbox_inches="tight")
+    plt.show()
+
+    print(f"Saved metrics to {METRICS_PATH}")
+    print(f"Saved results table to {RESULTS_CSV_PATH}")
+    print(f"Saved confusion matrix to {CONF_MATRIX_PATH}")
+    print(f"Saved classification report to {CLASS_REPORT_PATH}")
+
+
+if __name__ == "__main__":
+    main()
