@@ -225,10 +225,10 @@ import tensorflow as tf
 from tensorflow.keras.applications.efficientnet import preprocess_input
 from sklearn.metrics import accuracy_score, f1_score
 
-from src.data_pipeline import prepare_data
+from src.data_pipeline_augmented import prepare_data
 
 
-MODEL_PATH = Path("experiments/results/best_efficientnetb0.keras")
+MODEL_PATH = Path("experiments/results/best_efficientnetb0_augmented.keras")
 RL_RESULTS_PATH = Path("experiments/results/rl_results.json")
 REWARD_PLOT_PATH = Path("experiments/logs/rl_reward_curve.png")
 F1_PLOT_PATH = Path("experiments/logs/rl_f1_curve.png")
