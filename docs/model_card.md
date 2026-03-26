@@ -6,26 +6,22 @@
 
 This project presents a rice leaf disease detection system built using **EfficientNetB0** with transfer learning. The model classifies images of rice leaves into four categories and is supported by additional components that improve interpretability and decision-making.
 
-Alongside the CNN model, the system includes:
+The system integrates three AI components:
 
-* a simple **NLP module** that provides short, human-readable explanations of predictions
-* a **reinforcement learning (RL) component** that adjusts the confidence threshold to improve classification performance
-
-The model is implemented using **TensorFlow/Keras**, with supporting tools from **Scikit-learn**.
+* **CNN (EfficientNetB0)** for image classification
+* **NLP module** for human-readable explanations
+* **Reinforcement Learning (RL)** for confidence threshold optimization
 
 **Input:**
-
 * RGB image resized to 224 × 224
 
 **Output:**
-
 * predicted class
 * confidence score
 * threshold-adjusted decision (via RL)
-* short textual explanation
+* explanation text
 
 **Classes:**
-
 * Brown Spot
 * Hispa
 * Leaf Blast
@@ -35,139 +31,161 @@ The model is implemented using **TensorFlow/Keras**, with supporting tools from 
 
 ## 2. Intended Use
 
-The system is designed as a **decision-support tool** for identifying rice leaf diseases.
+This system is designed as a **decision-support tool** for rice leaf disease identification.
 
 It may be useful for:
-
 * farmers and agricultural workers
-* students learning about plant diseases
-* researchers exploring AI-based crop monitoring
+* students and researchers
+* agricultural monitoring applications
 
-The goal is to provide quick and accessible insights, especially in situations where expert consultation may not be immediately available.
-
-However, the system is **not intended to replace professional diagnosis**. Its predictions should be used as guidance rather than final decisions.
+⚠️ The system is **not a replacement for expert diagnosis**. Predictions should be used as guidance only.
 
 ---
 
 ## 3. Training Data
 
-The model was trained using the **RiceLeafs dataset** from Kaggle.
+The model was trained on a publicly available rice leaf disease dataset (Kaggle).
 
-The dataset contains images across four disease categories, with a few hundred samples per class. Most images were collected under relatively controlled conditions.
+### Preprocessing:
+* image resizing to 224 × 224
+* normalization using EfficientNet preprocessing
+* removal of corrupted images
+* train-validation split (no data leakage)
 
-### Preprocessing steps included:
+### Class Distribution (Imbalanced):
+* Leaf Blast — largest
+* Healthy — smallest
 
-* removing corrupted or unreadable images
-* resizing all images to 224 × 224
-* applying EfficientNet-specific normalization
-* splitting the data into training and validation sets
+To address imbalance:
+* **class weights were applied**
+* **macro-F1 was used as key metric**
 
 ---
 
 ## 4. Evaluation
 
-Model performance was evaluated using:
+### Metrics Used:
+* Accuracy
+* Macro-F1 Score
+* Confusion Matrix
 
-* **Accuracy**
-* **Macro-F1 score**
-* **Confusion matrix**
+### Final Performance (Baseline Model)
 
-Macro-F1 was given particular importance since it accounts for class imbalance and evaluates performance across all categories more fairly.
+| Metric     | Value   |
+|------------|--------|
+| Accuracy   | **0.9935** |
+| Macro-F1   | **0.9899** |
 
-### Baseline Comparison
-
-| Model               | Accuracy   | Macro-F1   |
-| ------------------- | ---------- | ---------- |
-| Logistic Regression | ~0.20–0.25 | ~0.18–0.22 |
-| Simple CNN          | ~0.30–0.35 | ~0.25–0.30 |
-| EfficientNetB0      | ~0.40      | ~0.35      |
-
-These results show that the EfficientNet-based model performs significantly better than simpler baselines.
+The model achieves high performance while maintaining balanced classification across all classes.
 
 ---
 
-## 5. Reinforcement Learning Optimization
+## 5. Ablation Study
 
-A lightweight **Q-learning agent** was used to adjust the confidence threshold applied to predictions.
+Two ablation experiments were conducted:
 
-Instead of retraining the CNN, the RL agent learns which threshold leads to better classification performance based on validation results.
+| Experiment              | Accuracy | Macro-F1 |
+|------------------------|---------:|---------:|
+| Baseline (Full Model)  | **0.9935** | **0.9899** |
+| No Augmentation        | 0.9928 | 0.9880 |
+| No Class Weights       | 0.9915 | 0.9792 |
 
-### Results
+### Findings:
 
-* CNN Base Macro-F1: **0.2366**
-* RL Optimized Macro-F1: **0.2473**
-* Best Threshold: **0.40**
+* Removing augmentation slightly reduced performance → affects generalization
+* Removing class weights caused a **larger drop in macro-F1**
+  * especially reduced recall for minority classes (e.g., Healthy)
 
-Although the improvement is modest, it demonstrates that post-processing decisions can meaningfully enhance performance.
-
----
-
-## 6. Explainability
-
-To make the system easier to understand, an NLP-based explanation module is included.
-
-Using TF-IDF and cosine similarity, the system retrieves relevant descriptions from a small knowledge base and generates a short explanation for each prediction.
-
-### Example
-
-Prediction: Leaf Blast
-Explanation: Leaf Blast is characterized by diamond-shaped lesions with gray centers and is commonly associated with fungal infection.
-
-This helps users better understand what the model is detecting, rather than relying solely on labels and scores.
+👉 This shows:
+* augmentation improves robustness
+* class weighting is critical for fairness
 
 ---
 
-## 7. Limitations
+## 6. Reinforcement Learning Optimization
 
-Several limitations should be considered:
+A **Q-learning agent** was used to optimize the classification confidence threshold.
 
-* the model is trained on only four disease categories
-* the dataset does not fully represent real-world farming conditions
-* performance may drop on images with poor lighting, blur, or unusual angles
-* class imbalance may still influence predictions
+### Results:
 
-Because of these factors, results may vary when applied outside the dataset environment.
+* Base Macro-F1: **0.9827**
+* Best Threshold: **0.7**
+* Improved Macro-F1: **0.9855**
 
----
-
-## 8. Ethical Considerations
-
-### Potential Risks
-
-* incorrect predictions could lead to improper treatment
-* users may over-rely on automated results
-* dataset bias may affect fairness and accuracy
-
-### Mitigation
-
-* confidence scores are provided with each prediction
-* explanations are included to improve transparency
-* RL is used to refine decision thresholds
-* clear disclaimers emphasize that this is a support tool
-
-Users are encouraged to verify results with agricultural experts whenever possible.
+This demonstrates that **post-processing decisions can improve model performance without retraining the CNN**.
 
 ---
 
-## 9. Future Work
+## 7. Explainability (Grad-CAM)
 
-Possible improvements include:
+To improve transparency, **Grad-CAM** was used to visualize model attention.
 
-* collecting real-world data from local farms
-* expanding the number of detectable diseases
-* improving robustness to environmental variation
-* deploying the system as a mobile or web application
-* incorporating expert feedback into the system
+### Observations:
+
+* Correct predictions → model focuses on lesion areas
+* Misclassifications → still focuses on relevant disease regions
+
+👉 This indicates:
+* model learns meaningful features
+* errors are due to **class similarity**, not random behavior
 
 ---
 
-## 10. Summary
+## 8. NLP Explanation Module
 
-This project demonstrates how multiple AI techniques can be combined into a single system:
+An NLP component generates short explanations for predictions using similarity-based retrieval.
 
-* CNN for image classification
-* NLP for interpretability
-* RL for decision optimization
+### Example:
 
-Together, these components create a more complete and practical solution for rice disease detection.
+Prediction: Leaf Blast  
+Explanation: Characterized by diamond-shaped lesions with gray centers caused by fungal infection.
 
+This improves usability and interpretability for non-expert users.
+
+---
+
+## 9. Limitations
+
+* limited to 4 disease classes
+* dataset may not fully represent real-world conditions
+* sensitive to lighting, blur, and angle variations
+* visually similar diseases may cause misclassification
+
+---
+
+## 10. Ethical Considerations
+
+### Risks:
+* incorrect predictions may lead to wrong treatment
+* over-reliance on AI outputs
+* dataset bias affecting fairness
+
+### Mitigation:
+* use of macro-F1 to evaluate fairness
+* class weighting to reduce bias
+* Grad-CAM for transparency
+* RL to refine decisions
+* clear disclaimer for users
+
+---
+
+## 11. Future Work
+
+* expand dataset (real farm data)
+* support more disease types
+* improve robustness
+* deploy as mobile/web app
+* integrate expert feedback
+
+---
+
+## 12. Summary
+
+This system combines:
+
+* CNN → classification
+* NLP → explanation
+* RL → optimization
+* Grad-CAM → interpretability
+
+Together, these components create a **robust, interpretable, and practical AI system** for rice leaf disease detection.
