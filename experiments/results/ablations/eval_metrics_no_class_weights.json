@@ -1,0 +1,5 @@
+{
+  "experiment": "no_class_weights",
+  "accuracy": 0.9915419648666233,
+  "macro_f1": 0.9791952942903729
+}
