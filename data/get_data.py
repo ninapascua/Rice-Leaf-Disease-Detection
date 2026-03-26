@@ -30,7 +30,7 @@ try:
         "datasets",
         "download",
         "-d",
-        "shayanriyaz/riceleafs",
+        "loki4514/rice-leaf-diseases-detection",
         "-p",
         DATA_DIR,
         "--unzip"

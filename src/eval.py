@@ -12,6 +12,7 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay,
     f1_score,
 )
+from keras.applications.efficientnet import preprocess_input
 
 from src.data_pipeline_augmented import prepare_data
 
@@ -27,19 +28,20 @@ def main():
     data = prepare_data()
     val_ds = data["val_ds"]
     class_names = data["class_names"]
-    y_val = data["y_val"]
 
-    model = tf.keras.models.load_model(MODEL_PATH)
+    model = tf.keras.models.load_model(
+        MODEL_PATH,
+        custom_objects={"preprocess_input": preprocess_input},
+    )
 
     val_probs = model.predict(val_ds, verbose=1)
     val_pred = np.argmax(val_probs, axis=1)
 
-    y_val_true = np.concatenate([y for _, y in val_ds], axis=0)
+    y_val_true = np.concatenate([y.numpy() for _, y in val_ds], axis=0)
 
     acc = accuracy_score(y_val_true, val_pred)
     macro_f1 = f1_score(y_val_true, val_pred, average="macro")
     cls_report = classification_report(y_val_true, val_pred, target_names=class_names)
-
     cm = confusion_matrix(y_val_true, val_pred)
 
     print("Accuracy:", round(acc, 4))

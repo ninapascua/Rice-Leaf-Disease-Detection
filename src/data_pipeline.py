@@ -30,10 +30,10 @@ def load_dataframes(
     val_df = pd.read_csv(val_csv)
 
     train_df["filepath"] = train_df["filepath"].str.replace(
-        "data/processed/train", "data/raw/RiceLeafs/train", regex=False
+        "data/processed/train", "data/raw/train", regex=False
     )
     val_df["filepath"] = val_df["filepath"].str.replace(
-        "data/processed/validation", "data/raw/RiceLeafs/validation", regex=False
+        "data/processed/validation", "data/raw/validation", regex=False
     )
 
     train_df["full_path"] = train_df["filepath"].apply(lambda p: os.path.join(".", p))
