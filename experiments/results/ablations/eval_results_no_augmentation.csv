@@ -1,0 +1,2 @@
+Model,Accuracy,Macro-F1
+EfficientNetB0 - No Augmentation,0.9928432010409889,0.9880492106284017

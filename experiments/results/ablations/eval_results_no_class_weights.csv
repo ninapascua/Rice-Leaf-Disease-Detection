@@ -1,0 +1,2 @@
+Model,Accuracy,Macro-F1
+EfficientNetB0 - No Class Weights,0.9915419648666233,0.9791952942903729
