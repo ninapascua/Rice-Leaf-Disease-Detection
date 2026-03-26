@@ -1,71 +1,93 @@
+# Rice Leaf Disease Detection using CNN, NLP, Reinforcement Learning, and Explainability
 
-# Rice Leaf Disease Detection using EfficientNet, NLP, and Reinforcement Learning
+---
 
 ## Overview
 
-This project develops an end-to-end AI system for detecting and classifying rice leaf diseases using deep learning, natural language processing, and reinforcement learning.
+This project presents an end-to-end artificial intelligence system for detecting rice leaf diseases using:
 
-The system combines:
+- Convolutional Neural Network (EfficientNetB0) for image classification  
+- Natural Language Processing (NLP) module for human-readable explanations  
+- Reinforcement Learning (RL) for threshold optimization  
+- Grad-CAM for model interpretability  
 
-* a **Convolutional Neural Network (CNN)** for image classification
-* a **Natural Language Processing (NLP)** module for explanation
-* a **Reinforcement Learning (RL)** agent for decision optimization
-
-The goal is to assist farmers and agricultural stakeholders in identifying rice leaf diseases quickly and accurately while also providing understandable explanations and improved decision thresholds.
-
----
-
-# Features
-
-* EfficientNetB0-based image classification (transfer learning)
-* Class imbalance handling using class weights
-* NLP-based explanation system using TF-IDF retrieval
-* Reinforcement Learning (Q-learning) for threshold optimization
-* Multi-metric evaluation (Accuracy, Macro-F1, Confusion Matrix)
-* Modular and reproducible ML pipeline
+The objective is to provide an accurate, explainable, and practical decision-support tool for agricultural use.
 
 ---
 
-# Project Structure
+## Key Results
+
+| Metric     | Value |
+|------------|------|
+| Accuracy   | 0.9935 |
+| Macro-F1   | 0.9899 |
+
+The model achieves high predictive performance while maintaining balanced classification across all disease categories.
+
+---
+
+## Ablation Study
+
+| Experiment              | Accuracy | Macro-F1 |
+|------------------------|---------:|---------:|
+| Baseline (Full Model)  | 0.9935 | 0.9899 |
+| No Augmentation        | 0.9928 | 0.9880 |
+| No Class Weights       | 0.9915 | 0.9792 |
+
+### Observations
+
+- Data augmentation contributes to improved generalization and robustness  
+- Class weighting has a stronger impact, particularly on macro-F1, indicating its importance in handling class imbalance  
+- Removing class weights results in reduced performance for minority classes  
+
+---
+
+## Explainability (Grad-CAM)
+
+Grad-CAM is used to visualize the regions of the input image that influence model predictions.
+
+- Correct predictions show attention focused on disease-related regions  
+- Misclassifications still highlight relevant leaf areas, indicating that errors arise from visual similarity rather than irrelevant features  
+
+This supports the reliability and interpretability of the model.
+
+---
+
+## Features
+
+- EfficientNetB0-based image classification with transfer learning  
+- Class imbalance handling using class weights  
+- Grad-CAM visualization for interpretability  
+- NLP-based explanation module using TF-IDF  
+- Reinforcement Learning for threshold optimization  
+- Multi-metric evaluation including Accuracy and Macro-F1  
+
+---
+
+## Project Structure
 
 ```
 Rice-Leaf-Disease-Detection/
 │
 ├── data/
-│   ├── get_data.py
-│   ├── raw/                  
-│   └── processed/            
-│
 ├── notebooks/
-│   ├── 01_eda.ipynb
-│   ├── 02_baselines.ipynb
-│   ├── 03_cnn.ipynb
-│   ├── 04_nlp.ipynb
-│   └── 05_rl.ipynb
-│
 ├── src/
-│   ├── data_pipeline.py
-│   ├── data_pipeline_augmented.py
+│   ├── ablations/
 │   ├── models/
-│   │   └── cnn_model.py
-│   │   └── cnn_model_augmented.py
+│   ├── utils/
 │   ├── train.py
 │   ├── eval.py
-│   ├── rl_agent.py
-│   └── utils/
-│       └── preprocess.py
+│   └── rl_agent.py
 │
 ├── experiments/
 │   ├── results/
-│   └── logs/
+│   ├── logs/
 │   └── configs/
 │
 ├── docs/
-│   ├── proposal.pdf
-│   ├── checkpoint.pdf
-│   ├── final_report.pdf
 │   ├── model_card.md
-│   └── ethics_statement.md
+│   ├── ethics_statement.md
+│   └── reports/
 │
 ├── requirements.txt
 └── README.md
@@ -73,7 +95,7 @@ Rice-Leaf-Disease-Detection/
 
 ---
 
-# Installation
+## Installation
 
 ```bash
 git clone https://github.com/your-repo/rice-leaf-disease-detection.git
@@ -83,33 +105,14 @@ cd rice-leaf-disease-detection
 ```bash
 python -m venv venv
 venv\Scripts\activate
-```
-
-```bash
 pip install -r requirements.txt
 ```
 
 ---
 
-# Dataset
+## Dataset
 
-This project uses the **RiceLeafs dataset from Kaggle**.
-
-## Setup Kaggle API
-
-```bash
-pip install kaggle
-```
-
-1. Go to [https://www.kaggle.com](https://www.kaggle.com)
-2. Account → API → Create New Token
-3. Move `kaggle.json` to:
-
-```
-C:\Users\<username>\.kaggle\kaggle.json
-```
-
-## Download dataset
+This project uses the RiceLeafs dataset from Kaggle.
 
 ```bash
 python data/get_data.py
@@ -117,225 +120,140 @@ python data/get_data.py
 
 ---
 
-# Data Preprocessing
+## Training and Evaluation
 
-```bash
-python src/utils/preprocess.py
-```
-
-This will:
-
-* clean corrupted images
-* resize to 224×224
-* split into train / validation
-* generate CSV metadata
-
----
-
-# Data Augmentation
-
-```bash
-python src/data_pipeline_augmentation.py
-```
-
-This will:
-
-* spatial / geometric augmentation
-* color / photometric augmentation
-* fine-grained noise
-* clipping
-
----
-
-
-# Exploratory Data Analysis
-
-Notebook:
-
-```
-notebooks/01_eda.ipynb
-```
-
-Includes:
-
-* class distribution
-* image visualization
-* resolution analysis
-* imbalance inspection
-
----
-
-# Baseline Models
-
-Notebook:
-
-```
-notebooks/02_baselines.ipynb
-```
-
-Models:
-
-* Logistic Regression (with PCA)
-* Simple CNN
-
-Purpose:
-
-* establish performance baseline
-
----
-
-# CNN Model (Core Component)
-
-Training:
+Train main model:
 
 ```bash
 python -m src.train
 ```
 
-Evaluation:
+Evaluate main model:
 
 ```bash
 python -m src.eval
 ```
 
-Model:
-
-* EfficientNetB0 (transfer learning)
-* fine-tuning applied
-* class weights for imbalance
-
-### Example Performance
-
-* Accuracy: ~0.40
-* Macro-F1: ~0.35
-
-Outputs:
-
-```
-experiments/results/
-```
-
 ---
 
-# NLP Explanation Module
-
-Notebook:
-
-```
-notebooks/04_nlp.ipynb
-```
-
-Approach:
-
-* TF-IDF vectorization
-* cosine similarity retrieval
-* disease knowledge base
-
-### Example Output
-
-```
-Prediction: LeafBlast
-Confidence: 0.78
-Explanation: LeafBlast is the predicted class. Common symptoms include diamond-shaped lesions...
-```
-
-Purpose:
-
-* improves interpretability
-* provides user-friendly explanation
-
----
-
-# Reinforcement Learning Component
-
-Run:
+## Ablation Experiments
 
 ```bash
-python -m src.rl_agent
-```
+python -m src.ablations.train_no_augmentation
+python -m src.ablations.eval_no_augmentation
 
-Notebook:
-
-```
-notebooks/05_rl.ipynb
-```
-
-Approach:
-
-* Q-learning agent
-* state = threshold
-* actions = increase / decrease / maintain threshold
-* reward = improvement in Macro-F1
-
-### Results
-
-```
-CNN Base Macro-F1 : 0.2366
-RL Best Macro-F1  : 0.2473
-Best Threshold    : 0.40
-```
-
-RL successfully improves model performance by optimizing decision thresholds
-
----
-
-# Evaluation Metrics
-
-* Accuracy
-* Macro-F1 Score
-* Confusion Matrix
-
-Macro-F1 is emphasized to ensure balanced performance across all disease classes.
-
----
-
-# System Architecture
-
-```
-Image → CNN (EfficientNet)
-          ↓
-     Prediction + Confidence
-          ↓
-   RL Threshold Optimization
-          ↓
- Final Decision → NLP Explanation
+python -m src.ablations.train_no_class_weights
+python -m src.ablations.eval_no_class_weights
 ```
 
 ---
 
-# Ethical Considerations
+## NLP Explanation Module
 
-This system is intended as a **decision-support tool**, not a replacement for professional agricultural diagnosis.
+The NLP component uses TF-IDF vectorization and cosine similarity to generate short, human-readable explanations for each prediction.
 
-Limitations:
+---
 
-* sensitive to image quality
-* may not generalize to unseen disease variations
-* environmental conditions may affect predictions
+## Reinforcement Learning Component
+
+A Q-learning agent is used to optimize the classification confidence threshold. This improves decision-making without modifying the CNN model.
+
+---
+
+## Evaluation Metrics
+
+- Accuracy  
+- Macro-F1 Score  
+- Confusion Matrix  
+
+Macro-F1 is emphasized to ensure balanced performance across all classes.
+
+---
+
+## Inference (Using the Model)
+
+After training the model, you can use it to predict a new image.
+
+### Run the prediction script
+
+```bash
+python scripts/predict.py
+```
+
+### Input
+
+You will be prompted to enter the full path of an image:
+
+```
+Enter image path: path/to/image.jpg
+```
+
+### Output
+
+The system will display:
+
+- Predicted class  
+- Confidence score  
+- Class probabilities  
+
+Example:
+
+```
+Prediction Result
+Predicted Class: LeafBlast
+Confidence: 98.25%
+
+Class Probabilities:
+BrownSpot: 0.01%
+Healthy: 0.50%
+LeafBlast: 98.25%
+Hispa: 1.24%
+```
+
+---
+
+## Notes
+
+- Images must be in JPG, JPEG, or PNG format  
+- Recommended input size: clear leaf image  
+- Results may vary depending on lighting and image quality  
+
+---
+
+## Ethical Considerations
+
+This system is intended as a decision-support tool and should not replace professional agricultural diagnosis.
+
+Limitations include:
+
+- sensitivity to image quality and environmental conditions  
+- potential dataset bias  
+- limited number of disease classes  
+
+Transparency is supported through Grad-CAM and explanation outputs.
 
 See:
 
-```
 docs/ethics_statement.md
-```
 
 ---
 
-# Team Members
+## Team Members
 
-* Alejandro, Francine Angela G.
-* Decilio, Yohanna A.
-* Mendoza, Shane S.
-* Pascua, Maria Nina Grace L.
+- Alejandro, Francine Angela G.  
+- Decilio, Yohanna A.  
+- Mendoza, Shane S.  
+- Pascua, Maria Niña Grace L.  
 
 ---
 
-# Final Notes
+## Summary
 
-This project demonstrates:
+This project integrates multiple AI components:
 
-* deep learning for image classification
-* NLP for explainability
-* reinforcement learning for optimization
+- CNN for classification  
+- NLP for explanation  
+- RL for optimization  
+- Grad-CAM for interpretability  
 
-forming a complete, modular AI system.
+The result is a robust and interpretable system for rice leaf disease detection.
