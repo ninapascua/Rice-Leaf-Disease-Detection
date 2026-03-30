@@ -1,0 +1,10 @@
+              precision    recall  f1-score   support
+
+   BrownSpot       0.98      0.99      0.98       296
+     Healthy       0.97      0.99      0.98        78
+  leaf_blast       1.00      0.99      0.99       633
+  rice_hispa       1.00      1.00      1.00       530
+
+    accuracy                           0.99      1537
+   macro avg       0.99      0.99      0.99      1537
+weighted avg       0.99      0.99      0.99      1537

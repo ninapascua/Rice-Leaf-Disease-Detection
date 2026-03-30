@@ -1,0 +1,5 @@
+{
+  "experiment": "no_augmentation",
+  "accuracy": 0.9928432010409889,
+  "macro_f1": 0.9880492106284017
+}

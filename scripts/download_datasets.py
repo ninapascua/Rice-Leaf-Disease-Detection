@@ -11,5 +11,7 @@ print("Downloading rice leaf datasets...")
 os.system("kaggle datasets download -d shayanriyaz/riceleafs -p data/raw --unzip")
 os.system("kaggle datasets download -d anshulm257/rice-disease-dataset -p data/raw --unzip")
 os.system("kaggle datasets download -d shrupyag001/philippines-rice-diseases -p data/raw --unzip")
+os.system("kaggle datasets download -d loki4514/rice-leaf-diseases-detection -p data/raw --unzip")
+
 
 print("Download complete.")
