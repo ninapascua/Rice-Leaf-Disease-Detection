@@ -1,10 +1,10 @@
 {
-  "base_accuracy": 0.9882888744307091,
-  "base_macro_f1": 0.9827442306957619,
+  "base_accuracy": 0.9934938191281718,
+  "base_macro_f1": 0.989856631277381,
   "base_threshold": 0.0,
-  "best_threshold": 0.7,
-  "best_macro_f1": 0.9855672246831122,
+  "best_threshold": 0.6,
+  "best_macro_f1": 0.9907702621361898,
   "final_policy_threshold": 0.6,
-  "final_policy_macro_f1": 0.9855048357435255,
+  "final_policy_macro_f1": 0.9907702621361898,
   "fallback_class": "leaf_blast"
 }
